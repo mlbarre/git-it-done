@@ -1,5 +1,6 @@
 var issueContainerEl = document.querySelector("#issues-container");
 var limitWarningEl = document.querySelector("#limit-warning");
+var repoNameEl = document.querySelector("#repo-name");
 
 
 var getRepoIssues = function(repo) {
@@ -11,13 +12,16 @@ var getRepoIssues = function(repo) {
         if (response.ok) {
             response.json().then(function(data) {
                 displayIssues(data);
-
+        
+        // CHECK IF APO HAS PAGINATED ISSUES
         if (response.headers.get("Link")) {
             displayWarning(repo);
         }
-            });
+        });
         } else {
-            alert("There was a problem with your request!");
+            // alert("There was a problem with your request!");
+            // IF NOT SUCCESSFUL, REDIRECT TO HOMEPAGE
+            document.location.replace("./index.html");
         }
     })
 };
@@ -76,4 +80,21 @@ var displayIssues = function(issues) {
 
 }
 
-getRepoIssues("facebook/react");
+var getRepoName = function() {
+    // GET REPO NAME FROM URL QUERY STRING
+    var queryString =  document.location.search;
+    var repoName = queryString.split("=")[1];
+    // console.log(repoName);
+
+    if (repoName) {
+        // DISPLAY REPO NAME ON THE PAGE
+        repoNameEl.textContent = repoName;
+
+        getRepoIssues(repoName);
+    } else {
+        // IF NO REPO WAS GIVEN, REDIRECT TO HOMEPAGE
+        document.location.replace("./index.html");
+    }
+};
+
+getRepoName();
